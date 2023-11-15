@@ -5,7 +5,8 @@
 % Step 1. Generate demands based on the STREaM model
 % Step 2. Assign new network demands (generated from STREaM) to L-Town.inp
 % Step 3. Run contaminations
-% Step 4. Calculate infection risk
+% Step 4. Calculate downstream population
+% Step 5. Calculate infection risk
 
 % The default is that steps 1,2, and 4 are commented so the user can generate the results as seen in the paper. To generate your own results, please uncomment the steps and follow the instructions in the code.
 
@@ -201,7 +202,7 @@ disp('EPANET-MATLAB Toolkit Paths Loaded.');
 %=================================================================================================================================%
 
 %% Step 2. Assign new network demands
-try 
+% try 
 % d.unload
 % catch ERR
 % end 
@@ -422,7 +423,7 @@ for i=1
     d.writeMSXFile(msx);
     
     % Printing
-    fprintf('The MSX File written successfully.\n');
+    fprintf('MSX File written successfully.\n');
     
     % Load MSX File
     d.loadMSXFile(msx.FILENAME);
@@ -460,7 +461,7 @@ for i=1
     C_SRAPAT(Injection_start_time:Injection_stop_time) = 1; % create the injection pattern
     % Define injection node and run all scenarios
     for nn = 1:3
-        scenario
+        disp(['Simulating contamination scenario ',num2str(nn),' of 3...'])
         injection_node_P= Source_nodes(nn);
         injection_node_C_FRA=Source_nodes(nn);
         injection_node_C_SRA=Source_nodes(nn);
@@ -496,7 +497,7 @@ end
 
 %% Step 4. Calculate downstream population
 % Calculate the downstream population for the three contamination locations (Loc_L, Loc-M, Loc-S).
-try 
+% try 
 % d.unload
 % catch ERR
 % end 
@@ -607,9 +608,14 @@ load Downstream_population_paper.mat %  Load the downstream population as genera
 
 Downstream_pop=[Pop_high Pop_mid Pop_low];
 
-for b = 1
-    b
-    inpname = ['L-TOWN_stream' num2str(b) '.inp'];
+sensenum=1;
+for b = 1:sensenum
+    disp(['Sensitivity scenario ',num2str(b)])
+    if sensenum==1
+        inpname = 'L-TOWN_stream_paper1.inp';
+    else
+        inpname = ['L-TOWN_stream' num2str(b) '.inp'];
+    end
 
     % load(matFileName);
     d = epanet(inpname, 'loadfile-ph');
