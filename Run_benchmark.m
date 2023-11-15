@@ -475,19 +475,19 @@ for i=1
         d.setMSXPattern('C_SRAPAT',C_SRAPAT);
         % Solve MSX quality dynamics
         Qmsx_species_P = d.getMSXComputedQualitySpecie('P');
-        Qmsx_species_C_FRA = d.getMSXComputedQualitySpecie('C_FRA');
-        Qmsx_species_C_SRA = d.getMSXComputedQualitySpecie('C_SRA');
-        Qmsx_species_CL2 = d.getMSXComputedQualitySpecie('CL2');
+        % Qmsx_species_C_FRA = d.getMSXComputedQualitySpecie('C_FRA');
+        % Qmsx_species_C_SRA = d.getMSXComputedQualitySpecie('C_SRA');
+        % Qmsx_species_CL2 = d.getMSXComputedQualitySpecie('CL2');
         d.setMSXSources(injection_node_P, 'P', 'MASS', 0, 'PathPAT'); % Reset injection source
         d.setMSXSources(injection_node_C_FRA, 'C_FRA', 'MASS', 0, 'C_FRAPAT'); % Reset injection source
         d.setMSXSources(injection_node_C_SRA, 'C_SRA', 'MASS', 0, 'C_SRAPAT'); % Reset injection source
         NodeQuality_strm_P{scenario} = Qmsx_species_P.NodeQuality;
-        NodeQuality_strm_CL2{scenario} = Qmsx_species_CL2.NodeQuality;
-        NodeQuality_strm_C_FRA{scenario} = Qmsx_species_C_FRA.NodeQuality;
-        NodeQuality_strm_C_SRA{scenario} = Qmsx_species_C_SRA.NodeQuality;
+        % NodeQuality_strm_CL2{scenario} = Qmsx_species_CL2.NodeQuality;
+        % NodeQuality_strm_C_FRA{scenario} = Qmsx_species_C_FRA.NodeQuality;
+        % NodeQuality_strm_C_SRA{scenario} = Qmsx_species_C_SRA.NodeQuality;
         scenario=scenario+1;
     end
-    save(['./Campylobacter_8h_',num2str(i)],'NodeQuality_strm_P','NodeQuality_strm_CL2','NodeQuality_strm_C_FRA','NodeQuality_strm_C_SRA','msx','hydraulics','d')
+    save(['./Campylobacter_8h_',num2str(i)],'NodeQuality_strm_P', 'msx','hydraulics','d')
 end
 
 %=================================================================================================================================%
