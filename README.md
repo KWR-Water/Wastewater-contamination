@@ -15,6 +15,6 @@ Please install the following software before use (see links for installation ins
 * Run [Display_results.m] to see the results
 
 ## Contributors
-* Sotirios Paraskevopoulos, [KWR Water Research Institute](https://www.kwrwater.nl/en/)
-* Stelios Vrachimis, [KIOS Research and Innovation Center of Excellence, University of Cyprus](http://www.kios.ucy.ac.cy/)
-* Marios Kyriakou, [KIOS Research and Innovation Center of Excellence, University of Cyprus](http://www.kios.ucy.ac.cy/)
+* Sotirios Paraskevopoulos @Sotireas, [KWR Water Research Institute](https://www.kwrwater.nl/en/)
+* Stelios Vrachimis @SteliosVr, [KIOS Research and Innovation Center of Excellence, University of Cyprus](http://www.kios.ucy.ac.cy/)
+* Marios Kyriakou @Mariosmsk, [KIOS Research and Innovation Center of Excellence, University of Cyprus](http://www.kios.ucy.ac.cy/)
