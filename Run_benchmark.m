@@ -7,6 +7,8 @@
 % Step 3. Run contaminations
 % Step 4. Calculate infection risk
 
+% The default is that steps 1,2, and 4 are commented so the user can generate the results as seen in the paper. To generate your own results, please uncomment the steps and follow the instructions in the code.
+
 %{
  Copyright (c) 2023 [KWR Water Research Institute] (https://www.kwrwater.nl/en/) and [KIOS Research and Innovation Centre of Excellence, University of Cyprus] (www.kios.org.cy)
  
@@ -33,272 +35,272 @@ fclose all;clear class;clear all;clc;close all;
 % Start EPANET MATLAB TOOLKIT
 addpath(genpath(pwd));
 disp('EPANET-MATLAB Toolkit Paths Loaded.'); 
-% Load a network.
-inpname = 'L-TOWN.inp';
+% inpname = 'L-TOWN.inp';
+% 
+% d = epanet(inpname);
+% d.setTimeReportingStep(300)
+% d.setTimeHydraulicStep(300)
+% d.setTimePatternStep(300)
+% hydraulics = d.getComputedTimeSeries;
+% 
+% %%% Calculate hydraulics
+% Demand= hydraulics.Demand(:,d.getNodeJunctionIndex);
+% Demand= Demand.*1000;  %CMH to L/h
+% K= round(size(Demand, 1)/7);
+% Dt= double(d.getTimeHydraulicStep)/3600;
+% Vpd= 150;
+% V_sc=cumsum(Demand(1:K,:),1)*Dt; %Calculate volume consumed per node in 24 hours
+% People_per_node= V_sc(end,:)/Vpd; % People per node 
+% 
+% %%% ::: STREAM :::
+% 
+% % AVAILABLE FIXTURES
+% % 1. toilet
+% % 2. shower
+% % 3. faucet
+% % 4. clothes washer
+% % 5. dishwasher
+% % 6. bathtub
+% %%% ::: INPUT SETTINGS :::
+% %%% ::: LOADING COMPLETE DATABASE :::
+% homeFolder = pwd;
+% addpath([homeFolder '/_DATA']); % Path to the folder where the database.mat file is stored
+% load database.mat
+% 
+% People_per_node_rnd= round(People_per_node);
+% Population_unc=0.1;
+% Node=d.getNodeNameID;
+% Scenario={};
+% % for 100 scenarios change the following for loop (1:100)
+% for scen=1
+%     scen
+%     for i=1:length(People_per_node_rnd)
+%         disp(['Simulating Node ',num2str(i),' of ',num2str(length(People_per_node_rnd))])
+%         % Create +-10% uncertainty
+%         Population=People_per_node_rnd(i);
+%         Population_l=Population-Population_unc*Population;
+%         Population_u=Population+Population_unc*Population;
+%         Population=Population_l+rand(1,length(Population)).*(Population_u-Population_l);
+%         Population = round(Population);
+% 
+%     %input population
+%     home=0;
+%     %initialization
+%     StToilet=0;
+%     StShower=0;
+%     StFaucet=0;
+%     StClothesWasher=0;
+%     StDishwasher=0;
+%     TOTAL=0;
+% 
+%     while Population>0
+% 
+%     % --- A. Household size setting
+%     home=home+1;
+%     param.HHsize = randi(5,1); % This parameter should be in the interval (1,6).
+%     % From 1 to 5, it indicates the number of people living in the house. 6 means ">5".
+% 
+%     Population=Population-param.HHsize;
+%     % --- B. Water consuming fixtures selection
+%     % Legend:
+%     % 0 = not present
+%     % 1 = present
+% 
+%     param.appliances.StToilet = 1;
+%     param.appliances.HEToilet = 0;
+% 
+%     param.appliances.StShower = 1;
+%     param.appliances.HEShower = 0;
+% 
+%     param.appliances.StFaucet = 1;
+%     param.appliances.HEFaucet = 0;
+% 
+%     param.appliances.StClothesWasher = 1;
+%     param.appliances.HEClothesWasher = 0;
+% 
+%     param.appliances.StDishwasher = 1;
+%     param.appliances.HEDishwasher = 0;
+% 
+%     param.appliances.StBathtub = 1;
+%     param.appliances.HEBathtub = 0;
+% 
+%     % --- C. Time horizon length setting
+%     param.H = 3; % It is measured in [days]
+% 
+%     % --- D. Time sampling resolution
+%     param.ts = 30; % It is measured in [10 seconds] units. The maximum resolution allowed is 10 seconds (param.ts = 1).
+% 
+%     % Setting the seed
+%     % rng(1);
+% 
+%     % Parameters structure settings and check
+%     % Checking input consistency
+%     temp=checkInput(param);
+%     % clearvars -except param
+% 
+%     %%% ::: WATER END-USE TIME SERIES GENERATION :::
+% 
+%     % Initialization
+%     outputTrajectory = initializeTrajectories(param);
+%     % Include the first step
+%     appNames = fieldnames(outputTrajectory);
+%     for app=appNames'
+%         outputTrajectory.(char(app))=zeros(1,length(outputTrajectory.TOTAL)+30);
+%     end
+% 
+%     % End-use water use time series generation
+%     outputTrajectory = generateConsumptionEvents(outputTrajectory, param, database);
+%     % disp('End-use consumption trajectories created');
+% 
+%     % Total water use time series aggregation
+%     outputTrajectory = sumToTotal(outputTrajectory);
+%     % disp('Total consumption trajectory created');
+% 
+%     % Data scaling to desired sampling resolution
+%     outputTrajectory = aggregateSamplingResolution(outputTrajectory, param);
+%     % disp('Data scaled to desired sampling resolution');
+% 
+%     StToilet=outputTrajectory.StToilet+StToilet;
+%     StShower=outputTrajectory.StShower+StShower;
+%     StFaucet=outputTrajectory.StFaucet+StFaucet;
+%     StClothesWasher=outputTrajectory.StClothesWasher+StClothesWasher;
+%     StDishwasher=outputTrajectory.StDishwasher+StDishwasher;
+%     TOTAL=outputTrajectory.TOTAL+TOTAL;
+%     clear outputTrajectory;
+%     end
+% 
+%     output.output(scen).(Node{i}).StToilet=StToilet;
+%     output.output(scen).(Node{i}).StShower=StShower;
+%     output.output(scen).(Node{i}).StFaucet=StFaucet;
+%     output.output(scen).(Node{i}).StClothesWasher=StClothesWasher;
+%     output.output(scen).(Node{i}).StDishwasher=StDishwasher;
+%     output.output(scen).(Node{i}).TOTAL=TOTAL;
+% 
+%     end
+% 
+%     %%% Assign stream demand for total water use
+%     for j=1:length(People_per_node_rnd)
+%     Stream_demand_tot(:,j)= output.output(scen).(Node{j}).TOTAL;
+%     end
+%     Stream_demand_tot= (Stream_demand_tot.*12)/1000; %convert from L/5min to CMH
+%     Stream.Scenario{scen}= Stream_demand_tot;
+% 
+%     % Assign stream demand for injestion of water
+%     for j=1:length(People_per_node_rnd)
+%     Stream_demand_Faucet(:,j)= output.output(scen).(Node{j}).StFaucet;
+%     end
+%     Stream_demand_Faucet= (Stream_demand_Faucet.*12)/1000; %convert from L/5min to CMH
+%     Stream_faucet.Scenario{scen}= Stream_demand_Faucet;
+% end
+% 
+% % Saving
+% save ('./Stream_demands.mat','output','Stream','Stream_faucet')
 
-d = epanet(inpname);
-d.setTimeReportingStep(300)
-d.setTimeHydraulicStep(300)
-d.setTimePatternStep(300)
-hydraulics = d.getComputedTimeSeries;
-
-%%% Calculate hydraulics
-Demand= hydraulics.Demand(:,d.getNodeJunctionIndex);
-Demand= Demand.*1000;  %CMH to L/h
-K= round(size(Demand, 1)/7);
-Dt= double(d.getTimeHydraulicStep)/3600;
-Vpd= 150;
-V_sc=cumsum(Demand(1:K,:),1)*Dt; %Calculate volume consumed per node in 24 hours
-People_per_node= V_sc(end,:)/Vpd; % People per node 
-
-%%% ::: STREAM :::
-
-% AVAILABLE FIXTURES
-% 1. toilet
-% 2. shower
-% 3. faucet
-% 4. clothes washer
-% 5. dishwasher
-% 6. bathtub
-%%% ::: INPUT SETTINGS :::
-%%% ::: LOADING COMPLETE DATABASE :::
-homeFolder = pwd;
-addpath([homeFolder '/_DATA']); % Path to the folder where the database.mat file is stored
-load database.mat
-
-People_per_node_rnd= round(People_per_node);
-Population_unc=0.1;
-Node=d.getNodeNameID;
-Scenario={};
-% for 100 scenarios change the following for loop (1:100)
-for scen=1
-    scen
-    for i=1:length(People_per_node_rnd)
-        disp(['Simulating Node ',num2str(i),' of ',num2str(length(People_per_node_rnd))])
-        % Create +-10% uncertainty
-        Population=People_per_node_rnd(i);
-        Population_l=Population-Population_unc*Population;
-        Population_u=Population+Population_unc*Population;
-        Population=Population_l+rand(1,length(Population)).*(Population_u-Population_l);
-        Population = round(Population);
-    
-    %input population
-    home=0;
-    %initialization
-    StToilet=0;
-    StShower=0;
-    StFaucet=0;
-    StClothesWasher=0;
-    StDishwasher=0;
-    TOTAL=0;
-    
-    while Population>0
-    
-    % --- A. Household size setting
-    home=home+1;
-    param.HHsize = randi(5,1); % This parameter should be in the interval (1,6).
-    % From 1 to 5, it indicates the number of people living in the house. 6 means ">5".
-    
-    Population=Population-param.HHsize;
-    % --- B. Water consuming fixtures selection
-    % Legend:
-    % 0 = not present
-    % 1 = present
-    
-    param.appliances.StToilet = 1;
-    param.appliances.HEToilet = 0;
-    
-    param.appliances.StShower = 1;
-    param.appliances.HEShower = 0;
-    
-    param.appliances.StFaucet = 1;
-    param.appliances.HEFaucet = 0;
-    
-    param.appliances.StClothesWasher = 1;
-    param.appliances.HEClothesWasher = 0;
-    
-    param.appliances.StDishwasher = 1;
-    param.appliances.HEDishwasher = 0;
-    
-    param.appliances.StBathtub = 1;
-    param.appliances.HEBathtub = 0;
-    
-    % --- C. Time horizon length setting
-    param.H = 3; % It is measured in [days]
-    
-    % --- D. Time sampling resolution
-    param.ts = 30; % It is measured in [10 seconds] units. The maximum resolution allowed is 10 seconds (param.ts = 1).
-    
-    % Setting the seed
-    % rng(1);
-    
-    % Parameters structure settings and check
-    % Checking input consistency
-    temp=checkInput(param);
-    % clearvars -except param
-    
-    %%% ::: WATER END-USE TIME SERIES GENERATION :::
-    
-    % Initialization
-    outputTrajectory = initializeTrajectories(param);
-    % Include the first step
-    appNames = fieldnames(outputTrajectory);
-    for app=appNames'
-        outputTrajectory.(char(app))=zeros(1,length(outputTrajectory.TOTAL)+30);
-    end
-    
-    % End-use water use time series generation
-    outputTrajectory = generateConsumptionEvents(outputTrajectory, param, database);
-    % disp('End-use consumption trajectories created');
-    
-    % Total water use time series aggregation
-    outputTrajectory = sumToTotal(outputTrajectory);
-    % disp('Total consumption trajectory created');
-    
-    % Data scaling to desired sampling resolution
-    outputTrajectory = aggregateSamplingResolution(outputTrajectory, param);
-    % disp('Data scaled to desired sampling resolution');
-    
-    StToilet=outputTrajectory.StToilet+StToilet;
-    StShower=outputTrajectory.StShower+StShower;
-    StFaucet=outputTrajectory.StFaucet+StFaucet;
-    StClothesWasher=outputTrajectory.StClothesWasher+StClothesWasher;
-    StDishwasher=outputTrajectory.StDishwasher+StDishwasher;
-    TOTAL=outputTrajectory.TOTAL+TOTAL;
-    clear outputTrajectory;
-    end
-    
-    output.output(scen).(Node{i}).StToilet=StToilet;
-    output.output(scen).(Node{i}).StShower=StShower;
-    output.output(scen).(Node{i}).StFaucet=StFaucet;
-    output.output(scen).(Node{i}).StClothesWasher=StClothesWasher;
-    output.output(scen).(Node{i}).StDishwasher=StDishwasher;
-    output.output(scen).(Node{i}).TOTAL=TOTAL;
-    
-    end
-
-    %%% Assign stream demand for total water use
-    for j=1:length(People_per_node_rnd)
-    Stream_demand_tot(:,j)= output.output(scen).(Node{j}).TOTAL;
-    end
-    Stream_demand_tot= (Stream_demand_tot.*12)/1000; %convert from L/5min to CMH
-    Stream.Scenario{scen}= Stream_demand_tot;
-
-    % Assign stream demand for injestion of water
-    for j=1:length(People_per_node_rnd)
-    Stream_demand_Faucet(:,j)= output.output(scen).(Node{j}).StFaucet;
-    end
-    Stream_demand_Faucet= (Stream_demand_Faucet.*12)/1000; %convert from L/5min to CMH
-    Stream_faucet.Scenario{scen}= Stream_demand_Faucet;
-end
-
-% Saving
-save ('./Stream_demands.mat','output','Stream','Stream_faucet')
 
 %=================================================================================================================================%
 %=================================================================================================================================%
 
 %% Step 2. Assign new network demands
 try 
-d.unload
-catch ERR
-end 
-fclose all;clear class;
-close all;clear all;clc;
-% Start EPANET MATLAB TOOLKIT
-addpath(genpath(pwd))
-
-%%% Load Network:
-inpname = 'L-TOWN.inp';
-dispname = 'L-TOWN';
-d=epanet(inpname);
-nj=d.getNodeJunctionCount;
-nn=d.getNodeCount;
-
-% Assign demands to network:
-%%% Get existing patterns:
-%%%     d.getNodeDemandPatternIndex{categoryIndex}(nodeIndex)
-demInd1 = double(d.getNodeDemandPatternIndex{1}(:)); 
-demInd1G = demInd1;
-demInd2 = double(d.getNodeDemandPatternIndex{2}(:));
-demInd3 = double(d.getNodeDemandPatternIndex{3}(:));
-baseDemInd1 = double(d.getNodeBaseDemands{1}(:));
-baseDemInd2 = double(d.getNodeBaseDemands{2}(:));
-baseDemInd3 = double(d.getNodeBaseDemands{3}(:));
-
-%%% Zero base demands
-for i=1:nn
-    disp(['Zero base demand ',num2str(i)])
-    d.setNodeBaseDemands(i, 1, 0)
-    d.deleteNodeJunctionDemand(i,2)
-    d.deleteNodeJunctionDemand(i,2)
-end
-
-%%% Delete three(3) old patterns:
-d.deletePattern(1)
-d.deletePattern(1) % pattern number 2 become 1 after deletion of 1
-d.deletePattern(1)
-
-%%% Save new input file:
-emptyInpName = ['networks\',dispname,'_empty','.inp'];
-d.saveInputFile(emptyInpName);
-disp('EMPTY NETWORK READY!')
-
-%%% Load new actual demands:
-homeFolder = pwd;
-addpath([homeFolder '/Paper_results']); 
-load stream_demands_paper.mat % Stream demands as generated in the paper
-% load stream_demands.mat % Uncomment here to use the demands mat file you just created in Step 1
-
-%%% Calculate and assign new base demands:
-% for 100 scenarios change the following for loop (1:100)
-for m=1
-    d=epanet(emptyInpName);
-    demInd1 = demInd1G;
-    base_Stream_demand = mean(Stream.Scenario{m});
-    for i=1:nj
-        disp(['Assign base demand ',num2str(i)])
-        d.setNodeBaseDemands(i, 1, base_Stream_demand(i))
-    end
-
-%%% Calculate new patterns:
-    pattern_Stream_demand = Stream.Scenario{m}/base_Stream_demand;
-    pattern_Stream_demand(isnan(pattern_Stream_demand))=0;
-    
-    %%% Add new patterns:
-    for i = 1:nj
-        demands = pattern_Stream_demand(:);
-        resDemPatInd(i)=d.addPattern(['P-Res-',num2str(i)],demands);
-        disp(['Creating pattern Residential ',num2str(i)])
-    end
-    
-    for i=1:nj
-        disp(['Indexing pattern ',num2str(i),' category 1'])
-        if demInd1(i)==0
-            continue 
-        elseif demInd1(i)==1 % Residential
-            demInd1(i)=i;
-        else
-            error('unknown demand pattern')
-        end
-    end
-    
-    %%% Assign new patterns:
-    for i=1:nn
-        disp(['Assigning pattern ',num2str(i),' out of ',num2str(nn)])
-        d.setNodeDemandPatternIndex(i, 1, demInd1(i))
-    end
-    
-    % Correct times:
-    d.setTimeReportingStep(300)
-    d.setTimeHydraulicStep(300)
-    d.setTimePatternStep(300)
-
-% Save new input file:
-    newInpname = ['networks\',dispname,'_stream',num2str(m),'.inp'];
-    d.saveInputFile(newInpname);
-    disp('NETWORK READY!')
-end
+% d.unload
+% catch ERR
+% end 
+% fclose all;clear class;
+% close all;clear all;clc;
+% % Start EPANET MATLAB TOOLKIT
+% addpath(genpath(pwd))
+% 
+% %%% Load Network:
+% inpname = 'L-TOWN.inp';
+% dispname = 'L-TOWN';
+% d=epanet(inpname);
+% nj=d.getNodeJunctionCount;
+% nn=d.getNodeCount;
+% 
+% % Assign demands to network:
+% %%% Get existing patterns:
+% %%%     d.getNodeDemandPatternIndex{categoryIndex}(nodeIndex)
+% demInd1 = double(d.getNodeDemandPatternIndex{1}(:)); 
+% demInd1G = demInd1;
+% demInd2 = double(d.getNodeDemandPatternIndex{2}(:));
+% demInd3 = double(d.getNodeDemandPatternIndex{3}(:));
+% baseDemInd1 = double(d.getNodeBaseDemands{1}(:));
+% baseDemInd2 = double(d.getNodeBaseDemands{2}(:));
+% baseDemInd3 = double(d.getNodeBaseDemands{3}(:));
+% 
+% %%% Zero base demands
+% for i=1:nn
+%     disp(['Zero base demand ',num2str(i)])
+%     d.setNodeBaseDemands(i, 1, 0)
+%     d.deleteNodeJunctionDemand(i,2)
+%     d.deleteNodeJunctionDemand(i,2)
+% end
+% 
+% %%% Delete three(3) old patterns:
+% d.deletePattern(1)
+% d.deletePattern(1) % pattern number 2 become 1 after deletion of 1
+% d.deletePattern(1)
+% 
+% %%% Save new input file:
+% emptyInpName = ['networks\',dispname,'_empty','.inp'];
+% d.saveInputFile(emptyInpName);
+% disp('EMPTY NETWORK READY!')
+% 
+% %%% Load new actual demands:
+% homeFolder = pwd;
+% addpath([homeFolder '/Paper_results']); 
+% load stream_demands_paper.mat % Stream demands as generated in the paper
+% % load stream_demands.mat % Uncomment here to use the demands mat file you just created in Step 1
+% 
+% %%% Calculate and assign new base demands:
+% % for 100 scenarios change the following for loop (1:100)
+% for m=1
+%     d=epanet(emptyInpName);
+%     demInd1 = demInd1G;
+%     base_Stream_demand = mean(Stream.Scenario{m});
+%     for i=1:nj
+%         disp(['Assign base demand ',num2str(i)])
+%         d.setNodeBaseDemands(i, 1, base_Stream_demand(i))
+%     end
+% 
+% %%% Calculate new patterns:
+%     pattern_Stream_demand = Stream.Scenario{m}/base_Stream_demand;
+%     pattern_Stream_demand(isnan(pattern_Stream_demand))=0;
+% 
+%     %%% Add new patterns:
+%     for i = 1:nj
+%         demands = pattern_Stream_demand(:);
+%         resDemPatInd(i)=d.addPattern(['P-Res-',num2str(i)],demands);
+%         disp(['Creating pattern Residential ',num2str(i)])
+%     end
+% 
+%     for i=1:nj
+%         disp(['Indexing pattern ',num2str(i),' category 1'])
+%         if demInd1(i)==0
+%             continue 
+%         elseif demInd1(i)==1 % Residential
+%             demInd1(i)=i;
+%         else
+%             error('unknown demand pattern')
+%         end
+%     end
+% 
+%     %%% Assign new patterns:
+%     for i=1:nn
+%         disp(['Assigning pattern ',num2str(i),' out of ',num2str(nn)])
+%         d.setNodeDemandPatternIndex(i, 1, demInd1(i))
+%     end
+% 
+%     % Correct times:
+%     d.setTimeReportingStep(300)
+%     d.setTimeHydraulicStep(300)
+%     d.setTimePatternStep(300)
+% 
+% % Save new input file:
+%     newInpname = ['networks\',dispname,'_stream',num2str(m),'.inp'];
+%     d.saveInputFile(newInpname);
+%     disp('NETWORK READY!')
+% end
 
 %=================================================================================================================================%
 %=================================================================================================================================%
@@ -427,11 +429,11 @@ for i=1
 
     % Set contaminant concentration and a time profile (start and end time)
     Campylobacter = 9.02e+06; % Initial concentration of Campylobacter
-    Campylobacter_HIGH = 6.2e+07; % Higher initial concentration of Campylobacter
-    Enterovirus = 1.39e+06; % Initial concentration of enterovirus
-    Enterovirus_HIGH = 2.08e+07; % Higher initial concentration of enterovirus
-    Cryptosporidium = 3.54e+07; % Initial concentration of Cryptosporidium
-    Cryptosporidium_HIGH = 5.4e+08; % Higher initial concentration of Cryptosporidium
+    % Campylobacter_HIGH = 6.2e+07; % Higher initial concentration of Campylobacter
+    % Enterovirus = 1.39e+06; % Initial concentration of enterovirus
+    % Enterovirus_HIGH = 2.08e+07; % Higher initial concentration of enterovirus
+    % Cryptosporidium = 3.54e+07; % Initial concentration of Cryptosporidium
+    % Cryptosporidium_HIGH = 5.4e+08; % Higher initial concentration of Cryptosporidium
     Pathogen_concentration = Campylobacter; % CFU/L or PFU/L or oocysts/L
     TOC_concentration=140; % 140 mg/L for normal scenario, 250 mg/L for high scenario
     C_FRA_fraction=0.4; % fraction of fast reducing agent 
@@ -495,67 +497,67 @@ end
 %% Step 4. Calculate downstream population
 % Calculate the downstream population for the three contamination locations (Loc_L, Loc-M, Loc-S).
 try 
-d.unload
-catch ERR
-end 
-fclose all;clear class;clear all;clc;close all;
-
-%%% Load
-homeFolder = pwd;
-addpath([homeFolder '/Paper_results']); 
-load stream_demands_paper.mat % Stream demands as generated in the paper
-% load stream_demands.mat % Uncomment here to use the demands mat file you just created in Step 1
-
-tmpinp = 'L-TOWN_stream_paper'; % The network as generated in the paper
-% tmpinp = 'L-TOWN_stream'; % Uncomment here to use the network (.inp file) that was created in Step 2
-i=1;
-inpname = ['networks\',tmpinp, num2str(i),'.inp'];
-d = epanet(inpname, 'loadfile');
-hydraulics = d.getComputedTimeSeries;
-Dt= double(d.getTimeHydraulicStep)/3600;
-
-%%% Initialize
-NodeNum= d.getNodeCount;
-NodeIDs=d.getNodeJunctionNameID;
-nj = double(d.getNodeJunctionCount);
-A=zeros(NodeNum);
-distance=zeros(nj);
-
-%%% Create digraph
-avg_flows = mean(hydraulics.Flow);
-Flowsign= sign(avg_flows);
-Nidx= d.getLinkNodesIndex;
-for i=1:size(Nidx,1)
-    if Flowsign(i)==1
-        A(Nidx(i,1),Nidx(i,2)) = 1;
-    else
-        A(Nidx(i,2),Nidx(i,1)) = 1;
-    end
-end
-g = digraph(A);
-
-%%% Find downstream nodes for each node
-for i=d.getNodeJunctionIndex
-    Downstream.(NodeIDs{i})= nearest(g, i, Inf);
-end
-Exclude= [783 784 785];
-for i=d.getNodeJunctionIndex
-    Downstream.(NodeIDs{i}) = Downstream.(NodeIDs{i})(find(ismember(Downstream.(NodeIDs{i}),Exclude)==0));
-end
-
-Downstream_high=Downstream.n112;
-Downstream_mid=Downstream.n775;
-Downstream_low=Downstream.n44;
-b=1;
-Stream.Scenario{b}=Stream.Scenario{b}.*1000;
-Vpd= 150;
-V_sc=cumsum(Stream.Scenario{b}(385:672,:),1)*Dt; %Calculate volume consumed per node in 24 hours
-People_per_node= (V_sc(288,:)./Vpd); 
-People_per_node=round(People_per_node);
-Pop_high=sum(People_per_node(Downstream_high)');
-Pop_mid=sum(People_per_node(Downstream_mid)');
-Pop_low=sum(People_per_node(Downstream_low)');
-save('./Downstream_population.mat', "Pop_low","Pop_mid","Pop_high","Downstream_low","Downstream_mid","Downstream_high","People_per_node")
+% d.unload
+% catch ERR
+% end 
+% fclose all;clear class;clear all;clc;close all;
+% 
+% %%% Load
+% homeFolder = pwd;
+% addpath([homeFolder '/Paper_results']); 
+% load stream_demands_paper.mat % Stream demands as generated in the paper
+% % load stream_demands.mat % Uncomment here to use the demands mat file you just created in Step 1
+% 
+% tmpinp = 'L-TOWN_stream_paper'; % The network as generated in the paper
+% % tmpinp = 'L-TOWN_stream'; % Uncomment here to use the network (.inp file) that was created in Step 2
+% i=1;
+% inpname = ['networks\',tmpinp, num2str(i),'.inp'];
+% d = epanet(inpname, 'loadfile');
+% hydraulics = d.getComputedTimeSeries;
+% Dt= double(d.getTimeHydraulicStep)/3600;
+% 
+% %%% Initialize
+% NodeNum= d.getNodeCount;
+% NodeIDs=d.getNodeJunctionNameID;
+% nj = double(d.getNodeJunctionCount);
+% A=zeros(NodeNum);
+% distance=zeros(nj);
+% 
+% %%% Create digraph
+% avg_flows = mean(hydraulics.Flow);
+% Flowsign= sign(avg_flows);
+% Nidx= d.getLinkNodesIndex;
+% for i=1:size(Nidx,1)
+%     if Flowsign(i)==1
+%         A(Nidx(i,1),Nidx(i,2)) = 1;
+%     else
+%         A(Nidx(i,2),Nidx(i,1)) = 1;
+%     end
+% end
+% g = digraph(A);
+% 
+% %%% Find downstream nodes for each node
+% for i=d.getNodeJunctionIndex
+%     Downstream.(NodeIDs{i})= nearest(g, i, Inf);
+% end
+% Exclude= [783 784 785];
+% for i=d.getNodeJunctionIndex
+%     Downstream.(NodeIDs{i}) = Downstream.(NodeIDs{i})(find(ismember(Downstream.(NodeIDs{i}),Exclude)==0));
+% end
+% 
+% Downstream_high=Downstream.n112;
+% Downstream_mid=Downstream.n775;
+% Downstream_low=Downstream.n44;
+% b=1;
+% Stream.Scenario{b}=Stream.Scenario{b}.*1000;
+% Vpd= 150;
+% V_sc=cumsum(Stream.Scenario{b}(385:672,:),1)*Dt; %Calculate volume consumed per node in 24 hours
+% People_per_node= (V_sc(288,:)./Vpd); 
+% People_per_node=round(People_per_node);
+% Pop_high=sum(People_per_node(Downstream_high)');
+% Pop_mid=sum(People_per_node(Downstream_mid)');
+% Pop_low=sum(People_per_node(Downstream_low)');
+% save('./Downstream_population.mat', "Pop_low","Pop_mid","Pop_high","Downstream_low","Downstream_mid","Downstream_high","People_per_node")
 
 %=================================================================================================================================%
 %=================================================================================================================================%
