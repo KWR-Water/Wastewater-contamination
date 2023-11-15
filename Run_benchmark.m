@@ -64,8 +64,6 @@ disp('EPANET-MATLAB Toolkit Paths Loaded.');
 % % 6. bathtub
 % %%% ::: INPUT SETTINGS :::
 % %%% ::: LOADING COMPLETE DATABASE :::
-% homeFolder = pwd;
-% addpath([homeFolder '/_DATA']); % Path to the folder where the database.mat file is stored
 % load database.mat
 % 
 % People_per_node_rnd= round(People_per_node);
@@ -209,8 +207,6 @@ disp('EPANET-MATLAB Toolkit Paths Loaded.');
 % fclose all;clear class;
 % close all;clear all;clc;
 % % Start EPANET MATLAB TOOLKIT
-% addpath(genpath(pwd))
-% 
 % %%% Load Network:
 % inpname = 'L-TOWN.inp';
 % dispname = 'L-TOWN';
@@ -248,8 +244,6 @@ disp('EPANET-MATLAB Toolkit Paths Loaded.');
 % disp('EMPTY NETWORK READY!')
 % 
 % %%% Load new actual demands:
-% homeFolder = pwd;
-% addpath([homeFolder '/Paper_results']); 
 % load stream_demands_paper.mat % Stream demands as generated in the paper
 % % load stream_demands.mat % Uncomment here to use the demands mat file you just created in Step 1
 % 
@@ -476,19 +470,19 @@ for i=1
         d.setMSXPattern('C_SRAPAT',C_SRAPAT);
         % Solve MSX quality dynamics
         Qmsx_species_P = d.getMSXComputedQualitySpecie('P');
-        Qmsx_species_C_FRA = d.getMSXComputedQualitySpecie('C_FRA');
-        Qmsx_species_C_SRA = d.getMSXComputedQualitySpecie('C_SRA');
-        Qmsx_species_CL2 = d.getMSXComputedQualitySpecie('CL2');
+        % Qmsx_species_C_FRA = d.getMSXComputedQualitySpecie('C_FRA');
+        % Qmsx_species_C_SRA = d.getMSXComputedQualitySpecie('C_SRA');
+        % Qmsx_species_CL2 = d.getMSXComputedQualitySpecie('CL2');
         d.setMSXSources(injection_node_P, 'P', 'MASS', 0, 'PathPAT'); % Reset injection source
         d.setMSXSources(injection_node_C_FRA, 'C_FRA', 'MASS', 0, 'C_FRAPAT'); % Reset injection source
         d.setMSXSources(injection_node_C_SRA, 'C_SRA', 'MASS', 0, 'C_SRAPAT'); % Reset injection source
         NodeQuality_strm_P{scenario} = Qmsx_species_P.NodeQuality;
-        NodeQuality_strm_CL2{scenario} = Qmsx_species_CL2.NodeQuality;
-        NodeQuality_strm_C_FRA{scenario} = Qmsx_species_C_FRA.NodeQuality;
-        NodeQuality_strm_C_SRA{scenario} = Qmsx_species_C_SRA.NodeQuality;
+        % NodeQuality_strm_CL2{scenario} = Qmsx_species_CL2.NodeQuality;
+        % NodeQuality_strm_C_FRA{scenario} = Qmsx_species_C_FRA.NodeQuality;
+        % NodeQuality_strm_C_SRA{scenario} = Qmsx_species_C_SRA.NodeQuality;
         scenario=scenario+1;
     end
-    save(['./Campylobacter_8h_',num2str(i)],'NodeQuality_strm_P','NodeQuality_strm_CL2','NodeQuality_strm_C_FRA','NodeQuality_strm_C_SRA','msx','hydraulics','d')
+    save(['./Campylobacter_8h_',num2str(i)],'NodeQuality_strm_P', 'msx','hydraulics','d')
 end
 
 %=================================================================================================================================%
@@ -504,8 +498,6 @@ end
 % fclose all;clear class;clear all;clc;close all;
 % 
 % %%% Load
-% homeFolder = pwd;
-% addpath([homeFolder '/Paper_results']); 
 % load stream_demands_paper.mat % Stream demands as generated in the paper
 % % load stream_demands.mat % Uncomment here to use the demands mat file you just created in Step 1
 % 
@@ -570,9 +562,7 @@ try
 d.unload
 catch ERR
 end 
-fclose all;clear class;clear all;clc;close all
-homeFolder = pwd;
-addpath([homeFolder '/Paper_results']); 
+fclose all;clear class;clear all;clc;close all 
 load stream_demands_paper.mat % Stream demands as generated in the paper
 % load stream_demands.mat % Uncomment here to use the demands mat file you just created in Step 1
 
@@ -601,8 +591,6 @@ load Campylobacter_8h_1.mat % Load contamination results for Campylobacter
 % load Campylobacter_8h_HIGH_1.mat % Load Campylobacter contamination results for high initial concentration contamination scenario
 % load Campylobacter_8h_lowinact_1.mat % Load Campylobacter contamination results for low inactivation rate contamination scenario
 
-homeFolder = pwd;
-addpath([homeFolder '/Paper_results']); 
 load Downstream_population_paper.mat %  Load the downstream population as generated in the paper
 % load Downstream_population.mat %  Uncomment here to use the downstream population mat file that was created in Step 4
 
