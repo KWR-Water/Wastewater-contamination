@@ -826,7 +826,7 @@ ax.FontSize = 30; % Increase size of axis values
 ylim([0 12]);
 hold off;
 
-%% Uncomment to plot the results of the Sensitivity analysis. You need first to have generated the different scenarios (e.g. contamination of 2 hours, contamination of 24 hours, etc.).
+%% Uncomment to plot the results of the Sensitivity analysis. You need first to generate the different scenarios (e.g. contamination of 2 hours, contamination of 24 hours, etc.).
 
 % Load the mat file for each sensitivity analysis parameter (2h, 24h, High concentration, low inactivation) and assign it to each pathogens category
 % (e.g. Campy2{k}=Total_infections_per_timestep_aggregated{k};). Then divide each category with the total population and plot the results.
