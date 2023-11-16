@@ -55,11 +55,11 @@ k=1; % Change to 2 or 3 to select contamination locations. Default is 1= Loc-L
 % CampyHigh{k}=Total_infections_per_timestep_aggregated{k};
 % Campylowinact{k}=Total_infections_per_timestep_aggregated{k};
 
-Campy2{k}=Campy2{k}./sum(People_per_node);
-Campy8{k}=Campy8{k}./sum(People_per_node);
-Campy24{k}=Campy24{k}./sum(People_per_node);
-CampyHigh{k}=CampyHigh{k}./sum(People_per_node);
-Campylowinact{k}=Campylowinact{k}./sum(People_per_node);
+% Campy2{k}=Campy2{k}./sum(People_per_node);
+% Campy8{k}=Campy8{k}./sum(People_per_node);
+% Campy24{k}=Campy24{k}./sum(People_per_node);
+% CampyHigh{k}=CampyHigh{k}./sum(People_per_node);
+% Campylowinact{k}=Campylowinact{k}./sum(People_per_node);
 
 % Enterovirus
 
