@@ -635,13 +635,14 @@ for b = 1:sensenum
         Consumed_Stream(:,i)=Stream_tap(:,i).*fraction(i);
         % liter=sum(Consumed_Stream(:,1))/(People_per_node(1)*3);
     end
-    % Initialize Volume
+    % Initialize Volume matrix to calculate water consumption distribution per person per node
     Volume = cell(1, numJunctions);
     for m = 1:numJunctions
         Volume{m} = zeros(size(Stream_faucet.Scenario{b}(385:672,:),1), People_per_node(m));
     end
  
     for m=1:numJunctions
+    disp(['Calculating volume consumption for node ',num2str(m),' out of 782...'])
         for n=1:People_per_node(m)
             for i = 1:size(Consumed_Stream,1)
                 while Consumed_Stream(i,m) > 0
@@ -725,12 +726,13 @@ for b = 1:sensenum
     r_entero=0.014472;
     
     % Loop over the 3 cells in Dose
-    for k = 1:3
+    for k = 1:3 % Loc-L=1, Loc-M=2, Loc-S=3
         % Initialize cell array to store risk matrices for this Dose cell
         Risk_025{k} = cell(1, 782);
     
         % Loop over the 782 cells in this Scenario_Dose cell
         for m = 1:782
+        disp(['Calculating dose for node ',num2str(m),' out of 782',' in scenario',num2str(k)])
             % Extract the 288xindividuals matrix from the current cell
             dose_matrix = Scenario_Dose{k}{1, m};
     
@@ -752,7 +754,8 @@ for b = 1:sensenum
     Total_Infections_ts = cell(1, 3);
     
     % Loop over the 3 cells in Dose
-    for k = 1:3 % Loc-L, Loc-M, Loc-S
+    for k = 1:3 % Loc-L=1, Loc-M=2, Loc-S=3
+    disp(['Calculating number of infections and infection risk for scenario ',num2str(k),' out of 3...'])
         % Initialize cell array to store total infections for this Dose cell
         Total_Infections_ts{k} = [];
     
@@ -791,6 +794,108 @@ for b = 1:sensenum
 end
 save('./Infection_risk_Campylobacter_8h','Volume','Total_water_pp','Consumed_Stream','Dose','Risk_025','Total_Infections_ts','Total_risk_of_infection','Total_Infections_day','Affected_Risk','People_per_node','Total_infections_per_timestep_aggregated','Total_infections_per_timestep','Total_risk_per_person_for_each_ts')
 
+%% Plotting Risk of infection through time
+% Here you can plot the paper or your own results. The default is the paper results.
+
+load Infection_risk_Enterovirus_8h.mat
+% load Infection_risk_Enterovirus_8h_noCL2.mat
+load Infection_risk_Campylobacter_8h.mat
+% load Infection_risk_Campylobacter_8h_noCL2.mat
+% load Infection_risk_Cryptosporidium_8h.mat
+
+for k=1:3
+    Total_infections_per_timestep_aggregated{k}=Total_infections_per_timestep_aggregated{k}./sum(People_per_node);
+end
+
+% Plot here
+figure;
+    for k=1:3
+        x_axis = (1:numel(Total_infections_per_timestep_aggregated{k}))'* 5 / 60;  % convert to hours
+        plot(x_axis, 100*Total_infections_per_timestep_aggregated{k}, 'LineWidth', 4); hold on;  % convert to percentage
+    end
+xlabel('Time (hours)', 'FontSize', 30); % Increased font size for x-axis
+ylabel('Risk of infection (%)', 'FontSize', 30);     % Increased font size for y-axis, also convert to percentage
+xline(8, '--r', 'LineWidth', 4);
+% xline(16, '--r', 'LineWidth', 4);
+h_legend = legend('Loc-L', 'Loc-M', 'Loc-S','Location', 'northwest');
+set(h_legend, 'FontSize', 30);
+
+% Increase the size of the axes
+ax = gca;  % get current axes
+ax.FontSize = 30; % Increase size of axis values
+ylim([0 12]);
+hold off;
+
+%% Uncomment to plot the results of the Sensitivity analysis. You need first to have generated the different scenarios (e.g. contamination of 2 hours, contamination of 24 hours, etc.).
+
+% Load the mat file for each sensitivity analysis parameter (2h, 24h, High concentration, low inactivation) and assign it to each pathogens category
+% (e.g. Campy2{k}=Total_infections_per_timestep_aggregated{k};). Then divide each category with the total population and plot the results.
+
+% Campylobacter
+k=1; % Change to 2 or 3 to select contamination locations. Default is 1= Loc-L
+% load Infection_risk_Campylobacter_2h.mat
+% load Infection_risk_Campylobacter_8h.mat
+% load Infection_risk_Campylobacter_24h.mat
+% load Infection_risk_Campylobacter_8h_HIGH.mat
+% load Infection_risk_Campylobacter_8h_lowinact.mat
+
+% Campy2{k}=Total_infections_per_timestep_aggregated{k};
+% Campy8{k}=Total_infections_per_timestep_aggregated{k};
+% Campy24{k}=Total_infections_per_timestep_aggregated{k};
+% CampyHigh{k}=Total_infections_per_timestep_aggregated{k};
+% Campylowinact{k}=Total_infections_per_timestep_aggregated{k};
+
+% Campy2{k}=Campy2{k}./sum(People_per_node);
+% Campy8{k}=Campy8{k}./sum(People_per_node);
+% Campy24{k}=Campy24{k}./sum(People_per_node);
+% CampyHigh{k}=CampyHigh{k}./sum(People_per_node);
+% Campylowinact{k}=Campylowinact{k}./sum(People_per_node);
+
+% Enterovirus
+
+% load Infection_risk_Enterovirus_2h.mat
+% load Infection_risk_Enterovirus_8h.mat
+% load Infection_risk_Enterovirus_24h.mat
+% load Infection_risk_Enterovirus_8h_HIGH.mat
+% load Infection_risk_Enterovirus_8h_lowinact.mat
+% 
+% k=1; % Change to 2 or 3 to select contamination locations. Default is 1= Loc-L
+% Entero2{k}=Total_infections_per_timestep_aggregated{k};
+% Entero8{k}=Total_infections_per_timestep_aggregated{k};
+% Entero24{k}=Total_infections_per_timestep_aggregated{k};
+% EnteroHigh{k}=Total_infections_per_timestep_aggregated{k};
+% Enterolowinact{k}=Total_infections_per_timestep_aggregated{k};
+
+% Entero2{k}=Entero2{k}./sum(People_per_node);
+% Entero8{k}=Entero8{k}./sum(People_per_node);
+% Entero24{k}=Entero24{k}./sum(People_per_node);
+% EnteroHigh{k}=EnteroHigh{k}./sum(People_per_node);
+% Enterolowinact{k}=Enterolowinact{k}./sum(People_per_node);
+
+% Plot here
+% figure;
+% x_axis = (1:numel(Total_infections_per_timestep_aggregated{k}))'* 5 / 60;  % convert to hours
+% plot(x_axis, 100*Entero2{k}, ':m', 'LineWidth', 4); hold on;  % convert to percentage, red dashed line
+% plot(x_axis, 100*Entero24{k}, '--m', 'LineWidth', 4); hold on;  % convert to percentage, blue dotted line
+% plot(x_axis, 100*EnteroHigh{k}, '-.g', 'LineWidth', 4); hold on;  % convert to percentage, green dash-dot line
+% plot(x_axis, 100*Enterolowinact{k}, '-c', 'LineWidth', 4); hold on;  % convert to percentage, cyan solid line
+% plot(x_axis, 100*Entero8{k}, '-m', 'LineWidth', 4); hold on;  % convert to percentage, magenta solid line
+
+% xlabel('Time (hours)', 'FontSize', 30); % Increased font size for x-axis
+% ylabel('Risk of infection (%)', 'FontSize', 30);     % Increased font size for y-axis, also convert to percentage
+% xline(8, '-r', 'LineWidth', 4);
+% xline(24, '--r', 'LineWidth', 4);
+
+% define labels for the legend
+% legend_labels = {'2 hours', '24 hours', 'High concentration', 'Low inactivation','Original scenario'};
+% h_legend = legend(legend_labels, 'Location', 'northwest');
+% set(h_legend, 'FontSize', 26);
+
+% Increase the size of the axes
+% ax = gca;  % get current axes
+% ax.FontSize = 30; % Increase size of axis values
+% ylim([0 30]);
+% hold off;
 
 
 
