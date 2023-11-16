@@ -11,8 +11,7 @@ Please install the following software before use (see links for installation ins
 * [EPANET-Matlab-Toolkit](https://github.com/OpenWaterAnalytics/EPANET-Matlab-Toolkit)
 
 ## Instructions
-* Run `Run_benchmark.m` in MATLAB to perform simulations
-* Run `Display_results.m` to see the results
+* Run `Run_benchmark.m` in MATLAB to perform simulations and see the results
 
 ## Contributors
 * [Sotirios Paraskevopoulos](https://github.com/Sotireas), [KWR Water Research Institute](https://www.kwrwater.nl/en/)
