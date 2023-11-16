@@ -797,7 +797,7 @@ save('./Infection_risk_Campylobacter_8h','Volume','Total_water_pp','Consumed_Str
 %% Plotting Risk of infection through time
 % Here you can plot the paper or your own results. The default is the paper results.
 
-load Infection_risk_Enterovirus_8h.mat
+% load Infection_risk_Enterovirus_8h.mat
 % load Infection_risk_Enterovirus_8h_noCL2.mat
 load Infection_risk_Campylobacter_8h.mat
 % load Infection_risk_Campylobacter_8h_noCL2.mat
