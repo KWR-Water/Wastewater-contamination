@@ -1,7 +1,7 @@
 
 %% Plotting Risk of infection through time
-% Here you can plot the paper or your own results. The default are the paper results that first need to be generated.
-
+% Here you can plot the paper or your own results. The default is the paper results that first need to be generated.
+addpath(genpath(pwd));
 load Infection_risk_Enterovirus_8h.mat
 % load Infection_risk_Enterovirus_8h_noCL2.mat
 % load Infection_risk_Campylobacter_8h.mat
