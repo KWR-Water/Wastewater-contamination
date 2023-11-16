@@ -8,6 +8,7 @@ Contamination location plays an important role since it affects the dilution of 
 ## Requirements
 Please install the following software before use (see links for installation instructions):
 * [Matlab](http://www.mathworks.com/)
+* [Symbolic Math Toolbox](https://www.mathworks.com/products/symbolic.html)
 * [EPANET-Matlab-Toolkit](https://github.com/OpenWaterAnalytics/EPANET-Matlab-Toolkit)
 
 ## Instructions
